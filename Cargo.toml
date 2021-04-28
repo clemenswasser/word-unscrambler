@@ -1,0 +1,13 @@
+[package]
+name = "word-unscambler"
+version = "0.1.0"
+authors = ["Clemens Wasser <clemens.wasser@gmail.com>"]
+edition = "2018"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[dependencies]
+itertools = "0.10.0"
