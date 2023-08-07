@@ -2,8 +2,9 @@ use std::collections::HashMap;
 
 use itertools::Itertools;
 
+// An associative string hash
 fn compute_string_hash(s: &str) -> u64 {
-    s.bytes().map(|c| c as u64).fold(0, u64::wrapping_add)
+    s.bytes().map(u64::from).fold(0_u64, u64::wrapping_add)
 }
 
 fn find_word_candidates(
