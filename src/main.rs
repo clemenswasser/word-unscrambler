@@ -2,9 +2,11 @@ use std::collections::HashMap;
 
 use itertools::Itertools;
 
-// An associative string hash
-fn compute_string_hash(s: &str) -> u64 {
-    s.bytes().map(u64::from).fold(0_u64, u64::wrapping_add)
+fn associative_hash(s: &[u8]) -> u64 {
+    s.iter()
+        .copied()
+        .map(u64::from)
+        .fold(0_u64, u64::wrapping_add)
 }
 
 fn find_word_candidates(
@@ -13,7 +15,7 @@ fn find_word_candidates(
     first_char: Option<char>,
 ) -> Vec<String> {
     dictionary_map
-        .get(&compute_string_hash(search_word))
+        .get(&associative_hash(search_word.as_bytes()))
         .map_or_else(Vec::new, |words| {
             words
                 .iter()
@@ -60,7 +62,7 @@ fn main() {
 
     dictionary.lines().for_each(|word| {
         dictionary_map
-            .entry(compute_string_hash(word))
+            .entry(associative_hash(word.as_bytes()))
             .or_default()
             .push(word.to_string());
     });
@@ -138,4 +140,20 @@ fn main() {
         });
         println!();
     });
+}
+
+#[cfg(test)]
+mod test {
+    use super::associative_hash;
+
+    #[test]
+    fn test_associative_hash() {
+        const TEST_STRING: &[u8] = b"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        let mut sorted_string: Vec<_> = TEST_STRING.to_vec();
+        sorted_string.sort_unstable();
+        assert_eq!(
+            associative_hash(TEST_STRING),
+            associative_hash(&sorted_string)
+        );
+    }
 }
